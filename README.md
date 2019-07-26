@@ -1,5 +1,5 @@
 # Pipeline
-You may create your own pipe processor for any text file (for instance log file)
+You may want to create your own pipe processor for any text file (for instance log file)
 
 The main idea is based on *nix pipes - each processed line from file may be processed with several workers.
 
