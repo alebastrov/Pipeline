@@ -40,7 +40,13 @@ public class LineReaderWithPipeLineExample {
         System.err.println("Processing file...");
 
         LineReader lineReader = new LineReader(path);
-        lineReader.addToPipeline(new Pipeline<>("Skip comments", String.class, String[].class, new PropertiesFileConfiguration()) {
+        lineReader.addToPipeline(new Pipeline<String, String>("Skip comments", String.class, String.class) {
+            @Override
+            public boolean isAllowed(String line) {
+                return !line.trim().startsWith("#");
+            }
+        });
+        lineReader.addToPipeline(new Pipeline<>("Parse as CSV", String.class, String[].class, new PropertiesFileConfiguration()) {
             @Override
             public String[] process(String line) {
                 return CsvUtil.csvLineParser(line);

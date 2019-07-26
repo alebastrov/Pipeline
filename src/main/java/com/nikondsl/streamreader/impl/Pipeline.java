@@ -46,7 +46,9 @@ public abstract class Pipeline<T, R> implements ProcessLineWorker<T,R>, SkipLine
         return configuration;
     }
 
-    public abstract R process(T argument);
+    public R process(T argument) {
+        return (R)argument;
+    }
 
     public boolean isAllowed(T argument) {
         if (String.class.isAssignableFrom(argument.getClass())) {
