@@ -37,7 +37,8 @@ It might look as
 public String process(String line) {return line;}
 ````
 
-Next our step is to parse line from CSV format
+Next our step is to parse line from CSV format.
+
 ```
 lineReader.addToPipeline(new Pipeline<>("Parse as CSV", String.class, String[].class, new PropertiesFileConfiguration()) {
             @Override
@@ -61,3 +62,5 @@ Our next steps look similar to these.
 The more processing rule we have, the more operations we do.
 
 Besides that the program shows some statistics here - position if file, how many chars are processed and status of each line
+
+Have a fun!
