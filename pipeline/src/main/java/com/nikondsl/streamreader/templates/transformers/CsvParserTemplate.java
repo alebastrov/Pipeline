@@ -1,7 +1,8 @@
-package com.nikondsl.streamreader.templates;
+package com.nikondsl.streamreader.templates.transformers;
 
 import com.nikondsl.streamreader.impl.Pipeline;
 import com.nikondsl.streamreader.impl.PropertiesFileConfiguration;
+import com.nikondsl.streamreader.templates.PipelineCreator;
 import com.nikondsl.streamreader.util.CsvUtil;
 
 public class CsvParserTemplate implements PipelineCreator {

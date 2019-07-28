@@ -1,4 +1,4 @@
-package com.nikondsl.streamreader.templates;
+package com.nikondsl.streamreader.templates.matchers;
 
 import com.nikondsl.streamreader.impl.Pipeline;
 import com.nikondsl.streamreader.impl.PropertiesFileConfiguration;
@@ -10,15 +10,15 @@ public class WildcardMatcherTemplate {
 	
 	public WildcardMatcherTemplate(String patternString){
 		pattern = Pattern.compile(patternString
-				.replaceAll("*",".*")
-				.replaceAll("?",".?")
-				.replaceAll("+",".+"));
+				.replaceAll("\\*",".*")
+				.replaceAll("\\?",".?")
+				.replaceAll("\\+",".+"));
 	}
 	
 	public Pipeline createPipeline() {
-		return new Pipeline<String, Boolean>("Wildcards matcher", String.class, Boolean.class, new PropertiesFileConfiguration()) {
+		return new Pipeline<String, Boolean>("Wildcard matcher", String.class, Boolean.class, new PropertiesFileConfiguration()) {
 			@Override
-			public Boolean process(String line) {
+			public boolean isAllowed(String line) {
 				return pattern.matcher(line).matches();
 			}
 		};

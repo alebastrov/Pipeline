@@ -3,7 +3,7 @@ package com.nikondsl.streamreader.examples;
 import com.google.common.primitives.Ints;
 import com.nikondsl.streamreader.LineReader;
 import com.nikondsl.streamreader.impl.Pipeline;
-import com.nikondsl.streamreader.templates.CsvParserTemplate;
+import com.nikondsl.streamreader.templates.transformers.CsvParserTemplate;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 public class LineReaderWithPipeLineExample {
 
     public static void main(String[] args) throws IOException {
-        String path = "d:/logs/test.txt";
+        String path = "/tmp/test.txt";
         System.err.println("Creating sample file...");
         try(BufferedWriter bw = new BufferedWriter(new FileWriter(new File(path)));) {
             bw.write("\n");
