@@ -4,7 +4,7 @@ import com.nikondsl.streamreader.impl.Pipeline;
 import com.nikondsl.streamreader.templates.matchers.WildcardMatcherTemplate;
 import com.nikondsl.streamreader.templates.transformers.CsvParserTemplate;
 import com.nikondsl.streamreader.templates.transformers.FindReplaceTemplate;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
