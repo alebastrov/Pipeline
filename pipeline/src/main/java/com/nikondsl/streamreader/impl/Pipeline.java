@@ -52,11 +52,15 @@ public abstract class Pipeline<T, R> implements ProcessLineWorker<T,R>, SkipLine
 
     public boolean isAllowed(T argument) {
         if (String.class.isAssignableFrom(argument.getClass())) {
-            String line = (String) argument;
-            String singlelineCommentCharacters = configuration.getSinglelineCommentCharacters();
-            return singlelineCommentCharacters == null ||
-                   singlelineCommentCharacters.isEmpty() ||
-                   !line.startsWith(singlelineCommentCharacters);
+            String line = ((String) argument).trim();
+            String[] singlelineCommentCharacters = configuration.getSinglelineCommentCharacters();
+            if (singlelineCommentCharacters == null || singlelineCommentCharacters.length == 0) {
+                return true;
+            }
+            for (String startCommentSign : singlelineCommentCharacters) {
+                if (line.startsWith(startCommentSign)) return false;
+            }
+            return true;
         }
         return true;
     }

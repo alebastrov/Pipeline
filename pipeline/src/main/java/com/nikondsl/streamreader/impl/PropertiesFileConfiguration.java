@@ -6,7 +6,7 @@ import com.nikondsl.streamreader.impl.DefaultConfiguration;
 public class PropertiesFileConfiguration extends DefaultConfiguration implements ReaderConfiguration {
 
     @Override
-    public String getSinglelineCommentCharacters() {
-        return "#";
+    public String[] getSinglelineCommentCharacters() {
+        return new String[] {"#", "//"};
     }
 }

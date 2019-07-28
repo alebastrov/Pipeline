@@ -10,7 +10,7 @@ public class DefaultConfiguration implements ReaderConfiguration {
     }
 
     @Override
-    public String getSinglelineCommentCharacters() {
+    public String[] getSinglelineCommentCharacters() {
         return null;
     }
 }
