@@ -15,7 +15,7 @@ public class RegexpMatcherTemplate {
 	public Pipeline createPipeline() {
 		return new Pipeline<String, Boolean>("Regular expression matcher", String.class, Boolean.class, new PropertiesFileConfiguration()) {
 			@Override
-			public Boolean process(String line) {
+			public boolean isAllowed(String line) {
 				return pattern.matcher(line).matches();
 			}
 		};

@@ -1,11 +1,11 @@
 package com.nikondsl.streamreader.impl;
 
 
-import com.nikondsl.streamreader.ProcessLineWorker;
-import com.nikondsl.streamreader.ReaderConfiguration;
-import com.nikondsl.streamreader.SkipLineProcessor;
+import com.nikondsl.streamreader.LineProcessor;
+import com.nikondsl.streamreader.configuration.ReaderConfiguration;
+import com.nikondsl.streamreader.SkipProcessor;
 
-public abstract class Pipeline<T, R> implements ProcessLineWorker<T,R>, SkipLineProcessor<T> {
+public abstract class Pipeline<T, R> implements LineProcessor<T,R>, SkipProcessor<T> {
 
     private String name;
     private Class argument;

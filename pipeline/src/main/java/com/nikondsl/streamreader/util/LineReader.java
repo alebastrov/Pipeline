@@ -1,4 +1,4 @@
-package com.nikondsl.streamreader;
+package com.nikondsl.streamreader.util;
 
 import com.nikondsl.streamreader.impl.LastStatus;
 import com.nikondsl.streamreader.impl.Pipeline;

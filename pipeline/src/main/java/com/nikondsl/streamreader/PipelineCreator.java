@@ -1,4 +1,4 @@
-package com.nikondsl.streamreader.templates;
+package com.nikondsl.streamreader;
 
 import com.nikondsl.streamreader.impl.Pipeline;
 

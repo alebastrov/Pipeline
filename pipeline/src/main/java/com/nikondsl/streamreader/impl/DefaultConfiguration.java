@@ -1,6 +1,6 @@
 package com.nikondsl.streamreader.impl;
 
-import com.nikondsl.streamreader.ReaderConfiguration;
+import com.nikondsl.streamreader.configuration.ReaderConfiguration;
 
 public class DefaultConfiguration implements ReaderConfiguration {
     private static ReaderConfiguration instance = new DefaultConfiguration();

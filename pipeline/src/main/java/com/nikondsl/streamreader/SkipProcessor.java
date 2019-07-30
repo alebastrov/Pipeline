@@ -1,5 +1,5 @@
 package com.nikondsl.streamreader;
 
-public interface SkipLineProcessor<T> {
+public interface SkipProcessor<T> {
     default boolean isAllowed(T argument) {return true;}
 }
