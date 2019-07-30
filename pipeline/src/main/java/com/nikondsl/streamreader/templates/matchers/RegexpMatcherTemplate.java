@@ -1,11 +1,12 @@
 package com.nikondsl.streamreader.templates.matchers;
 
+import com.nikondsl.streamreader.PipelineCreator;
 import com.nikondsl.streamreader.impl.Pipeline;
 import com.nikondsl.streamreader.impl.PropertiesFileConfiguration;
 
 import java.util.regex.Pattern;
 
-public class RegexpMatcherTemplate {
+public class RegexpMatcherTemplate implements PipelineCreator {
 	private Pattern pattern;
 	
 	public RegexpMatcherTemplate(String patternString){
