@@ -22,13 +22,15 @@ import java.util.stream.Stream;
 public class LineReader {
     private File file;
     private List<Pipeline> pipelines = new ArrayList<>();
+    private final ReadStatistics readStatistics = new ReadStatistics(0);
 
     public LineReader(String path) throws IOException {
         this.file = Paths.get(path).toFile();
         if (!this.file.exists()) throw new FileNotFoundException("File " + path + " is not found");
+        readStatistics.setLevel(ReadStatistics.ToStringLevel.NUMBERS);
     }
 
-    public <T, R> void addToPipeline(Pipeline<T, R> pipeline) {
+    public <T, R> LineReader addToPipeline(Pipeline<T, R> pipeline) {
         if (pipelines.isEmpty()) {
             if (!String.class.isAssignableFrom(pipeline.getArgumentClass())) {
                 throw new IllegalArgumentException("First pipe should take only class 'String' as an argument, but was: " + pipeline.getArgumentClass().getCanonicalName());
@@ -41,6 +43,12 @@ public class LineReader {
             }
         }
         pipelines.add(pipeline);
+        return this;
+    }
+    
+    public LineReader setLogLevel(ReadStatistics.ToStringLevel level) {
+        readStatistics.setLevel(level);
+        return this;
     }
 
     public Stream readLineByLine(Predicate<String> filter) throws IOException {
@@ -48,8 +56,8 @@ public class LineReader {
             throw new IllegalStateException("Please add at least one pipe before processing " + file.getAbsolutePath());
         }
         Queue<CompletableFuture<Object>> queue = new ConcurrentLinkedQueue<>();
-        final ReadStatistics readStatistics = new ReadStatistics(file.length());
-        readStatistics.setLevel(ReadStatistics.ToStringLevel.NUMBERS);
+        readStatistics.setFileSize(file.length());
+        
         try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));){
             reader
                 .lines()
@@ -98,7 +106,8 @@ public class LineReader {
                     } else {
                         future.completeExceptionally(new IOException("Pipeline ["+currentPipeline.getName()+"] cannot process line:" + line + " (" + lastSuccessStep + ")"));
                     }
-                    System.err.println("" + readStatistics.toString());
+                    String stat = readStatistics.toString();
+                    if (stat != null) System.err.println("" + stat);
                 });
         }
         return queue.stream();

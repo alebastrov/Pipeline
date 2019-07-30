@@ -17,6 +17,7 @@ public class ReadStatistics {
     }
 
     public enum ToStringLevel {
+        SILENT,
         SHORT_PERCENT,
         SHORT_NUMBERS,
         PERCENT,
@@ -28,9 +29,13 @@ public class ReadStatistics {
     }
 
     public ReadStatistics(long fileSize) {
-        this.fileSize = fileSize;
+        setFileSize(fileSize);
     }
 
+    public void setFileSize(long fileSize) {
+        this.fileSize = fileSize;
+    }
+    
     public void addToPosition(long position) {
         this.position += position;
         fixPosition();
@@ -71,6 +76,8 @@ public class ReadStatistics {
 
     public String toString() {
         switch (level) {
+            case SILENT:
+                return null;
             case NUMBERS:
                 return String.format("Processed chars: %8d/%-8d", (long)position, (long)fileSize) + "" + speedKph + " (" + message + ")";
             case PERCENT:
