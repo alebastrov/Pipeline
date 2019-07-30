@@ -14,8 +14,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -23,8 +25,8 @@ public class LineReader {
     private File file;
     private List<Pipeline> pipelines = new ArrayList<>();
     private final ReadStatistics readStatistics = new ReadStatistics(0);
-
-    public LineReader(String path) throws IOException {
+	
+	public LineReader(String path) throws IOException {
         this.file = Paths.get(path).toFile();
         if (!this.file.exists()) throw new FileNotFoundException("File " + path + " is not found");
         readStatistics.setLevel(ReadStatistics.ToStringLevel.NUMBERS);
@@ -58,58 +60,66 @@ public class LineReader {
         Queue<CompletableFuture<Object>> queue = new ConcurrentLinkedQueue<>();
         readStatistics.setFileSize(file.length());
         
-        try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));){
-            reader
-                .lines()
-                .forEach(line -> {
-                    readStatistics.addToPosition(line.length() + 2);
-                    readStatistics.setLine(line);
-                    if (!filter.test(line)) return;
-                    CompletableFuture<Object> future = new CompletableFuture<>();
-                    queue.add(future);
-                    Object stepResult = line;
-                    LastStatus lastSuccessStep = LastStatus.BEFORE_BEGIN;
-                    Pipeline currentPipeline = null;
-                    int pipeNumber = 0;
-                    for (Pipeline pipeline : pipelines) {
-                        pipeNumber++;
-                        try {
-                            currentPipeline = pipeline;
-                            if (future.isCancelled()) {
-                                lastSuccessStep = LastStatus.CANCELLED;
-                                break;
-                            }
-                            if (stepResult == null) {
-                                if (lastSuccessStep != LastStatus.NOT_ALLOWED) {
-                                    lastSuccessStep = LastStatus.PIPELINE_RETURNED_NULL;
-                                }
-                                break;
-                            }
-                            try {
-                                if (pipeline.isAllowed(stepResult)) {
-                                    stepResult = pipeline.process(stepResult);
-                                    lastSuccessStep = LastStatus.PROCESSED;
-                                } else {
-                                    stepResult = null;
-                                    lastSuccessStep = LastStatus.NOT_ALLOWED;
-                                    break;
-                                }
-                            } catch (Exception ex) {
-                                lastSuccessStep = LastStatus.PROCESSING_ERROR;
-                            }
-                        } finally {
-                            readStatistics.setMessage("Pipe #" + pipeNumber + " " + lastSuccessStep);
-                        }
-                    }
-                    if (stepResult != null) {
-                        future.complete(stepResult);
-                    } else {
-                        future.completeExceptionally(new IOException("Pipeline ["+currentPipeline.getName()+"] cannot process line:" + line + " (" + lastSuccessStep + ")"));
-                    }
-                    String stat = readStatistics.toString();
-                    if (stat != null) System.err.println("" + stat);
-                });
-        }
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));) {
+			reader
+					.lines()
+					.forEach(getConsumer(filter, queue));
+		}
+		
         return queue.stream();
     }
+	
+	private Consumer<String> getConsumer(Predicate<String> filter, Queue<CompletableFuture<Object>> queue) {
+		return new Consumer<String>() {
+			@Override
+			public void accept(String line) {
+				readStatistics.addToPosition(line.length() + 2);
+				readStatistics.setLine(line);
+				if (!filter.test(line)) return;
+				CompletableFuture<Object> future = new CompletableFuture<>();
+				queue.add(future);
+				Object stepResult = line;
+				LastStatus lastSuccessStep = LastStatus.BEFORE_BEGIN;
+				Pipeline currentPipeline = null;
+				int pipeNumber = 0;
+				for (Pipeline pipeline : pipelines) {
+					pipeNumber++;
+					try {
+						currentPipeline = pipeline;
+						if (future.isCancelled()) {
+							lastSuccessStep = LastStatus.CANCELLED;
+							break;
+						}
+						if (stepResult == null) {
+							if (lastSuccessStep != LastStatus.NOT_ALLOWED) {
+								lastSuccessStep = LastStatus.PIPELINE_RETURNED_NULL;
+							}
+							break;
+						}
+						try {
+							if (pipeline.isAllowed(stepResult)) {
+								stepResult = pipeline.process(stepResult);
+								lastSuccessStep = LastStatus.PROCESSED;
+							} else {
+								stepResult = null;
+								lastSuccessStep = LastStatus.NOT_ALLOWED;
+								break;
+							}
+						} catch (Exception ex) {
+							lastSuccessStep = LastStatus.PROCESSING_ERROR;
+						}
+					} finally {
+						readStatistics.setMessage("Pipe #" + pipeNumber + " " + lastSuccessStep);
+					}
+				}
+				if (stepResult != null) {
+					future.complete(stepResult);
+				} else {
+					future.completeExceptionally(new IOException("Pipeline [" + currentPipeline.getName() + "] cannot process line:" + line + " (" + lastSuccessStep + ")"));
+				}
+				String stat = readStatistics.toString();
+				if (stat != null) System.err.println("" + stat);
+			}
+		};
+	}
 }
