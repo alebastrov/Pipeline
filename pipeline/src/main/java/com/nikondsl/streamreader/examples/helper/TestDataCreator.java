@@ -1,11 +1,11 @@
-package com.nikondsl.streamreader.examples;
+package com.nikondsl.streamreader.examples.helper;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-class TestDataCreator {
+public class TestDataCreator {
 	public static String invoke() throws IOException {
 		String path = "/tmp/test.txt";
 		System.err.println("Creating sample file...");

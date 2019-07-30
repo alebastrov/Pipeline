@@ -1,6 +1,7 @@
 package com.nikondsl.streamreader.examples;
 
 import com.google.common.primitives.Ints;
+import com.nikondsl.streamreader.examples.helper.TestDataCreator;
 import com.nikondsl.streamreader.util.LineReader;
 import com.nikondsl.streamreader.impl.Pipeline;
 import com.nikondsl.streamreader.templates.transformers.CsvParserTemplate;
